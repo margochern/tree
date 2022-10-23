@@ -1,4 +1,6 @@
-#!/usr/bin/env bash
+#!usr/bin/bash
+
+export LANG=en_US.UTF-8
 
 shopt -s nullglob
 dir_count=0
@@ -15,17 +17,17 @@ traverse() {
   for idx in "${!children[@]}"; do 
     local child=${children[$idx]}
 
-    local child_prefix="│   "
-    local pointer="├── "
+    local child_prefix="\u2502\u00A0\u00A0\u0020"
+    local pointer="\u251c\u2500\u2500\u0020"
 
     if [ $idx -eq $((child_count - 1)) ]; then
-      pointer="└── "
+      pointer="\u2514\u2500\u2500\u0020"
       child_prefix="    "
     fi
 
-    echo "${prefix}${pointer}${child##*/}"
+    printf "$prefix$pointer${child##*/}\n"
     [ -d "$child" ] &&
-      traverse "$child" "${prefix}$child_prefix" ||
+      traverse "$child" "$prefix$child_prefix" ||
       file_count=$((file_count + 1))
   done
 }
@@ -36,5 +38,20 @@ echo $root
 
 traverse $root ""
 echo
-echo "$(($dir_count - 1)) directories, $file_count files"
+
+    
+if [ $dir_count -ne 2 ] && [ $file_count -ne 1 ]
+then
+    echo "$(($dir_count - 1)) directories, $file_count files"
+    
+elif [ $dir_count -eq 2 ] && [ $file_count -eq 1 ] 
+then
+    echo "$(($dir_count - 1)) directory, $file_count file"
+    elif [ $dir_count -eq 2 ] && [ $file_count -ne 1 ]
+then
+    echo "$(($dir_count - 1)) directory, $file_count files"
+elif [ $dir_count -ne 2 ] && [ $file_count -eq 1 ]
+then
+    echo "$(($dir_count - 1)) directories, $file_count file" 
+fi
 shopt -u nullglob
